@@ -40,7 +40,7 @@ export default class Client {
 			units: params.units,
 		};
 
-		return this.post("/context", body);
+		return this.post("/context", null, body);
 	}
 
 	refreshContext(params) {
@@ -52,7 +52,7 @@ export default class Client {
 			units: params.units,
 		};
 
-		return this.post("/context", body);
+		return this.post("/context", null, body);
 	}
 
 	publish(params) {
@@ -76,11 +76,18 @@ export default class Client {
 			body.attributes = params.attributes;
 		}
 
-		return this.put("/context", body);
+		return this.put("/context", null, body);
 	}
 
-	request(method, path, body) {
-		const url = `${this._opts.endpoint}${path}`;
+	request(method, path, query, body) {
+		let url = `${this._opts.endpoint}${path}`;
+		if (query) {
+			const keys = Object.keys(query);
+			if (keys.length > 0) {
+				const encoded = keys.map(k => `${k}=${encodeURIComponent(query[k])}`).join("&");
+				url = `${url}?${encoded}`;
+			}
+		}
 
 		const tryOnce = () => {
 			return fetch(url, {
@@ -89,7 +96,7 @@ export default class Client {
 					"Content-Type": "application/json",
 					"X-API-Key": this._opts.apiKey,
 				},
-				body: JSON.stringify(body, null, 0),
+				body: (body !== undefined) ? JSON.stringify(body, null, 0) : "",
 			}).then((response) => {
 				if (!response.ok) {
 					const bail = response.status >= 400 && response.status < 500;
@@ -128,11 +135,11 @@ export default class Client {
 		return tryWith(this._opts.retries, this._opts.timeout);
 	}
 
-	post(path, body) {
-		return this.request("POST", path, body);
+	post(path, query, body) {
+		return this.request("POST", path, query, body);
 	}
 
-	put(path, body) {
-		return this.request("PUT", path, body);
+	put(path, query, body) {
+		return this.request("PUT", path, query, body);
 	}
 }

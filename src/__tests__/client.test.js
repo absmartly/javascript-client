@@ -176,9 +176,9 @@ describe("Client", () => {
 
 		const client = new Client(clientOptions);
 
-		client.request("PUT", "/context", {}).then((response) => {
+		client.request("PUT", "/context", {a: 1}, {}).then((response) => {
 			expect(fetch).toHaveBeenCalledTimes(3);
-			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context?a=1`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -211,9 +211,9 @@ describe("Client", () => {
 		const options = Object.assign({}, clientOptions, { retries: 5, timeout: 2000 });
 		const client = new Client(options);
 
-		client.request("PUT", "/context", {}).catch((error) => {
+		client.request("PUT", "/context", {a: 1},{}).catch((error) => {
 			expect(fetch).toHaveBeenCalledTimes(6);
-			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context?a=1`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -250,9 +250,9 @@ describe("Client", () => {
 		const options = Object.assign({}, clientOptions, { retries: 5, timeout: 2000 });
 		const client = new Client(options);
 
-		client.request("PUT", "/context", {}).catch((error) => {
+		client.request("PUT", "/context", {a: 1}, {}).catch((error) => {
 			expect(fetch).toHaveBeenCalledTimes(6);
-			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context?a=1`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -278,9 +278,9 @@ describe("Client", () => {
 
 		const client = new Client(clientOptions);
 
-		client.request("POST", "/context", {}).catch((error) => {
+		client.request("POST", "/context", {a: 1}, {}).catch((error) => {
 			expect(fetch).toHaveBeenCalledTimes(1);
-			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context?a=1`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -304,9 +304,9 @@ describe("Client", () => {
 
 		const client = new Client(clientOptions);
 
-		client.request("POST", "/context", {}).then((response) => {
+		client.request("POST", "/context", {a: 1}, {}).then((response) => {
 			expect(fetch).toHaveBeenCalledTimes(2);
-			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context?a=1`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -323,6 +323,72 @@ describe("Client", () => {
 		});
 
 		advanceFakeTimers();
+	});
+
+	it("request() should encode url query parameters", (done) => {
+		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(clientOptions);
+
+		client.request("PUT", "/context", {a: 1, b: "ã=á"}, {}).then((response) => {
+			expect(fetch).toHaveBeenCalledTimes(1);
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context?a=1&b=%C3%A3%3D%C3%A1`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"X-API-Key": apiKey,
+				},
+				body: JSON.stringify({}),
+			});
+
+			expect(response).toEqual(defaultMockResponse);
+
+			done();
+		});
+	});
+
+	it("request() should omit query parameters if dict empty", (done) => {
+		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(clientOptions);
+
+		client.request("PUT", "/context", {}, {}).then((response) => {
+			expect(fetch).toHaveBeenCalledTimes(1);
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"X-API-Key": apiKey,
+				},
+				body: JSON.stringify({}),
+			});
+
+			expect(response).toEqual(defaultMockResponse);
+
+			done();
+		});
+	});
+
+	it("request() should call fetch with an empty body if not specified", (done) => {
+		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(clientOptions);
+
+		client.request("PUT", "/context").then((response) => {
+			expect(fetch).toHaveBeenCalledTimes(1);
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"X-API-Key": apiKey,
+				},
+				body: "",
+			});
+
+			expect(response).toEqual(defaultMockResponse);
+
+			done();
+		});
 	});
 
 	it("publish() calls endpoint", (done) => {
