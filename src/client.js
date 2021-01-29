@@ -79,6 +79,10 @@ export default class Client {
 		return this.put("/context", null, body);
 	}
 
+	getExperiments(params) {
+		return this.get("/experiment", params);
+	}
+
 	request(method, path, query, body) {
 		let url = `${this._opts.endpoint}${path}`;
 		if (query) {
@@ -141,5 +145,9 @@ export default class Client {
 
 	put(path, query, body) {
 		return this.request("PUT", path, query, body);
+	}
+
+	get(path, query) {
+		return this.request("GET", path, query);
 	}
 }

@@ -464,4 +464,31 @@ describe("Client", () => {
 				done();
 			});
 	});
+
+	it("getExperiments() calls endpoint", (done) => {
+		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(clientOptions);
+
+		client
+			.getExperiments({
+				unit_type: "session_id",
+				application: "website"
+			})
+			.then((response) => {
+				expect(fetch).toHaveBeenCalledTimes(1);
+				expect(fetch).toHaveBeenCalledWith(`${endpoint}/experiment?unit_type=session_id&application=website`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						"X-API-Key": apiKey,
+					},
+					body: "",
+				});
+
+				expect(response).toEqual(defaultMockResponse);
+
+				done();
+			});
+	});
 });
