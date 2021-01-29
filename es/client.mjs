@@ -40,6 +40,17 @@ export default class Client {
     return this.post("/context", body);
   }
 
+  refreshContext(params) {
+    const body = {
+      guid: params.guid,
+      agent: this._opts.agent,
+      environment: this._opts.environment,
+      application: params.application || this._opts.application,
+      units: params.units
+    };
+    return this.post("/context", body);
+  }
+
   publish(params) {
     const body = {
       agent: this._opts.agent,

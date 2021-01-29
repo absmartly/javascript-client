@@ -135,6 +135,39 @@ describe("Client", () => {
 			});
 	});
 
+	it("refreshContext() calls endpoint", (done) => {
+		fetch.mockResolvedValue(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(clientOptions);
+
+		client
+			.refreshContext({
+				guid: defaultMockResponse.guid,
+				units,
+			})
+			.then((response) => {
+				expect(fetch).toHaveBeenCalledTimes(1);
+				expect(fetch).toHaveBeenCalledWith(`${endpoint}/context`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-API-Key": apiKey,
+					},
+					body: JSON.stringify({
+						guid: defaultMockResponse.guid,
+						agent,
+						environment,
+						application,
+						units,
+					}),
+				});
+
+				expect(response).toStrictEqual(defaultMockResponse);
+
+				done();
+			});
+	});
+
 	it("request() retries on connection error", (done) => {
 		fetch
 			.mockRejectedValueOnce(new Error("error 1"))
