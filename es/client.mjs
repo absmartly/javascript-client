@@ -32,31 +32,22 @@ export default class Client {
 
   createContext(params) {
     const body = {
-      agent: this._opts.agent,
-      environment: this._opts.environment,
-      application: params.application || this._opts.application,
       units: params.units
     };
-    return this.post("/context", body);
+    return this.post("/context", null, body);
   }
 
   refreshContext(params) {
     const body = {
       guid: params.guid,
-      agent: this._opts.agent,
-      environment: this._opts.environment,
-      application: params.application || this._opts.application,
       units: params.units
     };
-    return this.post("/context", body);
+    return this.post("/context", null, body);
   }
 
   publish(params) {
     const body = {
-      agent: this._opts.agent,
-      environment: this._opts.environment,
       guid: params.guid,
-      application: params.application || this._opts.application,
       units: params.units
     };
 
@@ -72,20 +63,63 @@ export default class Client {
       body.attributes = params.attributes;
     }
 
-    return this.put("/context", body);
+    return this.put("/context", null, body);
   }
 
-  request(method, path, body) {
-    const url = `${this._opts.endpoint}${path}`;
+  getExperiments(params) {
+    return this.get("/experiment", params);
+  }
+
+  createVariantOverride(params) {
+    const body = {
+      units: params.units,
+      overrides: params.overrides
+    };
+    return this.post("/override", null, body);
+  }
+
+  getVariantOverride(params) {
+    const query = Object.assign({}, params, {
+      units: Client.stringify(params.units)
+    });
+    return this.get("/override", query);
+  }
+
+  removeVariantOverride(params) {
+    const query = Object.assign({}, params, {
+      units: Client.stringify(params.units)
+    });
+    return this.delete("/override", query);
+  }
+
+  static stringify(obj) {
+    return JSON.stringify(obj, null, 0);
+  }
+
+  request(method, path, query, body) {
+    let url = `${this._opts.endpoint}${path}`;
+
+    if (query) {
+      const keys = Object.keys(query);
+
+      if (keys.length > 0) {
+        const encoded = keys.map(k => `${k}=${encodeURIComponent(query[k])}`).join("&");
+        url = `${url}?${encoded}`;
+      }
+    }
 
     const tryOnce = () => {
       return fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          "X-API-Key": this._opts.apiKey
+          "X-API-Key": this._opts.apiKey,
+          "X-Agent": this._opts.agent,
+          "X-Environment": this._opts.environment,
+          "X-Application": this._opts.application.name,
+          "X-Application-Version": this._opts.application.version || 0
         },
-        body: JSON.stringify(body, null, 0)
+        body: body !== undefined ? JSON.stringify(body, null, 0) : undefined
       }).then(response => {
         if (!response.ok) {
           const bail = response.status >= 400 && response.status < 500;
@@ -123,12 +157,20 @@ export default class Client {
     return tryWith(this._opts.retries, this._opts.timeout);
   }
 
-  post(path, body) {
-    return this.request("POST", path, body);
+  post(path, query, body) {
+    return this.request("POST", path, query, body);
   }
 
-  put(path, body) {
-    return this.request("PUT", path, body);
+  put(path, query, body) {
+    return this.request("PUT", path, query, body);
+  }
+
+  get(path, query) {
+    return this.request("GET", path, query);
+  }
+
+  delete(path, query) {
+    return this.request("DELETE", path, query);
   }
 
 }

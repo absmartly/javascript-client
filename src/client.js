@@ -34,9 +34,6 @@ export default class Client {
 
 	createContext(params) {
 		const body = {
-			agent: this._opts.agent,
-			environment: this._opts.environment,
-			application: params.application || this._opts.application,
 			units: params.units,
 		};
 
@@ -46,9 +43,6 @@ export default class Client {
 	refreshContext(params) {
 		const body = {
 			guid: params.guid,
-			agent: this._opts.agent,
-			environment: this._opts.environment,
-			application: params.application || this._opts.application,
 			units: params.units,
 		};
 
@@ -57,10 +51,7 @@ export default class Client {
 
 	publish(params) {
 		const body = {
-			agent: this._opts.agent,
-			environment: this._opts.environment,
 			guid: params.guid,
-			application: params.application || this._opts.application,
 			units: params.units,
 		};
 
@@ -83,12 +74,35 @@ export default class Client {
 		return this.get("/experiment", params);
 	}
 
+	createVariantOverride(params) {
+		const body = {
+			units: params.units,
+			overrides: params.overrides,
+		};
+
+		return this.post("/override", null, body);
+	}
+
+	getVariantOverride(params) {
+		const query = Object.assign({}, params, { units: Client.stringify(params.units) });
+		return this.get("/override", query);
+	}
+
+	removeVariantOverride(params) {
+		const query = Object.assign({}, params, { units: Client.stringify(params.units) });
+		return this.delete("/override", query);
+	}
+
+	static stringify(obj) {
+		return JSON.stringify(obj, null, 0);
+	}
+
 	request(method, path, query, body) {
 		let url = `${this._opts.endpoint}${path}`;
 		if (query) {
 			const keys = Object.keys(query);
 			if (keys.length > 0) {
-				const encoded = keys.map(k => `${k}=${encodeURIComponent(query[k])}`).join("&");
+				const encoded = keys.map((k) => `${k}=${encodeURIComponent(query[k])}`).join("&");
 				url = `${url}?${encoded}`;
 			}
 		}
@@ -99,8 +113,12 @@ export default class Client {
 				headers: {
 					"Content-Type": "application/json",
 					"X-API-Key": this._opts.apiKey,
+					"X-Agent": this._opts.agent,
+					"X-Environment": this._opts.environment,
+					"X-Application": this._opts.application.name,
+					"X-Application-Version": this._opts.application.version || 0,
 				},
-				body: (body !== undefined) ? JSON.stringify(body, null, 0) : "",
+				body: body !== undefined ? JSON.stringify(body, null, 0) : undefined,
 			}).then((response) => {
 				if (!response.ok) {
 					const bail = response.status >= 400 && response.status < 500;
@@ -149,5 +167,9 @@ export default class Client {
 
 	get(path, query) {
 		return this.request("GET", path, query);
+	}
+
+	delete(path, query) {
+		return this.request("DELETE", path, query);
 	}
 }
