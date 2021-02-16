@@ -41,7 +41,7 @@ You can include an optimized and pre-built package directly in your HTML code th
 
 Simply add the following code to your `head` section to include the latest published version.
 ```html
-    <script src="https://unpkg.com/@absmartly/javascript-client/dist/absmartly.min.js" type="javascript"></script>
+    <script src="https://unpkg.com/@absmartly/javascript-client/dist/absmartly.min.js"></script>
 ```
 
 ## Getting Started

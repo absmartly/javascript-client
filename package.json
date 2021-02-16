@@ -1,6 +1,6 @@
 {
 	"name": "@absmartly/javascript-client",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "A/B Smartly Collector Javascript Client",
 	"homepage": "https://github.com/absmartly/javascript-client#README.md",
 	"bugs": "https://github.com/absmartly/javascript-client/issues",
