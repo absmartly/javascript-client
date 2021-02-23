@@ -98,10 +98,19 @@ describe("Client", () => {
 			return result;
 		};
 
-		for (const key of ["apiKey", "endpoint", "environment"]) {
+		for (const key of ["apiKey", "application", "endpoint", "environment"]) {
 			expect(() => new Client(deleteOption(clientOptions, key))).toThrow();
 			expect(() => new Client(emptyOption(clientOptions, key))).toThrow();
 		}
+		expect(() => new Client(emptyOption(clientOptions, "agent"))).toThrow();
+
+		done();
+	});
+
+	it("constructor() should accept string application", (done) => {
+		const options = Object.assign({}, clientOptions, { application: "website" });
+
+		expect(() => new Client(options)).not.toThrow();
 
 		done();
 	});
@@ -417,6 +426,32 @@ describe("Client", () => {
 					"X-Environment": "test",
 					"X-Application": "test_app",
 					"X-Application-Version": 1000000,
+				},
+				body: undefined,
+			});
+
+			expect(response).toEqual(defaultMockResponse);
+
+			done();
+		});
+	});
+
+	it("request() should set applications headers for string application", (done) => {
+		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(Object.assign({}, clientOptions, { application: "website" }));
+
+		client.request("PUT", "/context").then((response) => {
+			expect(fetch).toHaveBeenCalledTimes(1);
+			expect(fetch).toHaveBeenLastCalledWith(`${endpoint}/context`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"X-API-Key": apiKey,
+					"X-Agent": "javascript-client",
+					"X-Environment": "test",
+					"X-Application": "website",
+					"X-Application-Version": 0,
 				},
 				body: undefined,
 			});

@@ -3,28 +3,38 @@ import fetch from "isomorphic-unfetch"; // eslint-disable-line no-shadow
 export default class Client {
   constructor(opts) {
     this._opts = Object.assign({
-      endpoint: undefined,
-      apiKey: undefined,
-      environment: undefined,
       agent: "javascript-client",
-      application: {
-        name: "default",
-        version: 0
-      },
+      apiKey: undefined,
+      application: undefined,
+      endpoint: undefined,
+      environment: undefined,
       retries: 5,
       timeout: 500
     }, opts);
 
-    for (const key of ["apiKey", "endpoint", "environment"]) {
+    for (const key of ["agent", "application", "apiKey", "endpoint", "environment"]) {
       if (key in this._opts && this._opts[key] !== undefined) {
         const value = this._opts[key];
 
         if (typeof value !== "string" || value.length === 0) {
+          if (key === "application") {
+            if (value !== null && typeof value === "object" && "name" in value) {
+              continue;
+            }
+          }
+
           throw new Error(`Invalid '${key}' in options argument`);
         }
       } else {
         throw new Error(`Missing '${key}' in options argument`);
       }
+    }
+
+    if (typeof this._opts.application === "string") {
+      this._opts.application = {
+        name: this._opts.application,
+        version: 0
+      };
     }
 
     this._delay = Math.max(10, this._opts.timeout / (1 << this._opts.retries));

@@ -54,10 +54,7 @@ const client = new absmartly.Client({
     endpoint: 'https://sandbox-api.absmartly.com/v1',
     apiKey: process.env.ABSMARTLY_API_KEY,
     environment: process.env.NODE_ENV,
-    application: {
-        name: process.env.APPLICATION_NAME,
-        version: process.env.APPLICATION_VERSION,
-    },
+    application: process.env.APPLICATION_NAME,
 });
 ```
 
