@@ -6,6 +6,7 @@ A/B Smartly - JavaScript client for the A/B Smartly Collector.
 If you are looking for the higher-level SDKs, please have a look at one of the following:
 
 - [JavaScript SDK](https://www.github.com/absmartly/javascript-sdk)
+- [Vue2 SDK](https://www.github.com/absmartly/vue2-sdk)
 - [PHP SDK](https://www.github.com/absmartly/php-sdk)
 
 ## Compatibility
@@ -64,4 +65,5 @@ A/B Smartly's real-time analytics helps engineering and product teams ensure tha
 
 ### Have a look at our growing list of clients and SDKs:
 - [JavaScript SDK](https://www.github.com/absmartly/javascript-sdk)
+- [Vue2 SDK](https://www.github.com/absmartly/vue2-sdk)
 - [PHP SDK](https://www.github.com/absmartly/php-sdk)
