@@ -62,6 +62,7 @@ export default class Client {
 		const body = {
 			guid: params.guid,
 			units: params.units,
+			publishedAt: params.publishedAt || Date.now(),
 		};
 
 		if (Array.isArray(params.goals) && params.goals.length > 0) {

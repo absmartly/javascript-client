@@ -73,6 +73,8 @@ describe("Client", () => {
 		},
 	];
 
+	const publishedAt = 1234567890;
+
 	function responseMock(statusCode, statusText, response) {
 		return {
 			ok: statusCode >= 200 && statusCode <= 299,
@@ -471,6 +473,7 @@ describe("Client", () => {
 			.publish({
 				guid: defaultMockResponse.guid,
 				units,
+				publishedAt,
 				goals,
 				exposures,
 				attributes,
@@ -490,6 +493,7 @@ describe("Client", () => {
 					body: JSON.stringify({
 						guid: defaultMockResponse.guid,
 						units,
+						publishedAt,
 						goals,
 						exposures,
 						attributes,
@@ -504,6 +508,45 @@ describe("Client", () => {
 
 	it("publish() should omit empty arrays", (done) => {
 		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+
+		const client = new Client(clientOptions);
+
+		client
+			.publish({
+				guid: defaultMockResponse.guid,
+				units,
+				publishedAt,
+				goals: [],
+				exposures: [],
+			})
+			.then((response) => {
+				expect(fetch).toHaveBeenCalledTimes(1);
+				expect(fetch).toHaveBeenCalledWith(`${endpoint}/context`, {
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json",
+						"X-API-Key": apiKey,
+						"X-Agent": "javascript-client",
+						"X-Environment": "test",
+						"X-Application": "test_app",
+						"X-Application-Version": 1000000,
+					},
+					body: JSON.stringify({
+						guid: defaultMockResponse.guid,
+						units,
+						publishedAt,
+					}),
+				});
+
+				expect(response).toEqual(defaultMockResponse);
+
+				done();
+			});
+	});
+
+	it("publish() should set publishedAt if not present", (done) => {
+		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
+		jest.spyOn(Date, "now").mockReturnValue(publishedAt + 100);
 
 		const client = new Client(clientOptions);
 
@@ -529,6 +572,7 @@ describe("Client", () => {
 					body: JSON.stringify({
 						guid: defaultMockResponse.guid,
 						units,
+						publishedAt: publishedAt + 100,
 					}),
 				});
 
