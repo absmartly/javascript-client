@@ -84,29 +84,6 @@ export default class Client {
 		return this.get("/experiment", params);
 	}
 
-	createVariantOverride(params) {
-		const body = {
-			units: params.units,
-			overrides: params.overrides,
-		};
-
-		return this.post("/override", null, body);
-	}
-
-	getVariantOverride(params) {
-		const query = Object.assign({}, params, { units: Client.stringify(params.units) });
-		return this.get("/override", query);
-	}
-
-	removeVariantOverride(params) {
-		const query = Object.assign({}, params, { units: Client.stringify(params.units) });
-		return this.delete("/override", query);
-	}
-
-	static stringify(obj) {
-		return JSON.stringify(obj, null, 0);
-	}
-
 	request(method, path, query, body) {
 		let url = `${this._opts.endpoint}${path}`;
 		if (query) {
@@ -177,9 +154,5 @@ export default class Client {
 
 	get(path, query) {
 		return this.request("GET", path, query);
-	}
-
-	delete(path, query) {
-		return this.request("DELETE", path, query);
 	}
 }

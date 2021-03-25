@@ -52,7 +52,7 @@ Please follow the [installation](#installation) instructions before trying the f
 ```javascript
 // somewhere in your application initialization code
 const client = new absmartly.Client({
-    endpoint: 'https://sandbox-api.absmartly.com/v1',
+    endpoint: 'https://sandbox.absmartly.io/v1',
     apiKey: process.env.ABSMARTLY_API_KEY,
     environment: process.env.NODE_ENV,
     application: process.env.APPLICATION_NAME,

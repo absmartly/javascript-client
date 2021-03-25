@@ -28,11 +28,6 @@ describe("Client", () => {
 		session_id: "dca367dcda209b5197f5f83aee862c7bfb09dc68",
 	};
 
-	const overrides = {
-		exp_test: 2,
-		exp_test_other: 1,
-	};
-
 	const clientOptions = {
 		endpoint,
 		agent,
@@ -605,106 +600,6 @@ describe("Client", () => {
 						"X-Application-Version": 1000000,
 					},
 				});
-
-				expect(response).toEqual(defaultMockResponse);
-
-				done();
-			});
-	});
-
-	it("createVariantOverride() calls endpoint", (done) => {
-		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
-
-		const client = new Client(clientOptions);
-
-		client
-			.createVariantOverride({
-				units,
-				overrides,
-			})
-			.then((response) => {
-				expect(fetch).toHaveBeenCalledTimes(1);
-				expect(fetch).toHaveBeenCalledWith(`${endpoint}/override`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						"X-API-Key": apiKey,
-						"X-Agent": "javascript-client",
-						"X-Environment": "test",
-						"X-Application": "test_app",
-						"X-Application-Version": 1000000,
-					},
-					body: JSON.stringify({
-						units,
-						overrides,
-					}),
-				});
-
-				expect(response).toEqual(defaultMockResponse);
-
-				done();
-			});
-	});
-
-	it("getVariantOverride() calls endpoint", (done) => {
-		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
-
-		const client = new Client(clientOptions);
-
-		client
-			.getVariantOverride({
-				units,
-				experiment: "test_exp",
-			})
-			.then((response) => {
-				expect(fetch).toHaveBeenCalledTimes(1);
-				expect(fetch).toHaveBeenCalledWith(
-					`${endpoint}/override?units=%7B%22session_id%22%3A%22dca367dcda209b5197f5f83aee862c7bfb09dc68%22%7D&experiment=test_exp`,
-					{
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json",
-							"X-API-Key": apiKey,
-							"X-Agent": "javascript-client",
-							"X-Environment": "test",
-							"X-Application": "test_app",
-							"X-Application-Version": 1000000,
-						},
-					}
-				);
-
-				expect(response).toEqual(defaultMockResponse);
-
-				done();
-			});
-	});
-
-	it("removeVariantOverride() calls endpoint", (done) => {
-		fetch.mockResolvedValueOnce(responseMock(200, "OK", defaultMockResponse));
-
-		const client = new Client(clientOptions);
-
-		client
-			.removeVariantOverride({
-				units,
-				experiment: "test_exp",
-			})
-			.then((response) => {
-				expect(fetch).toHaveBeenCalledTimes(1);
-				expect(fetch).toHaveBeenCalledWith(
-					`${endpoint}/override?units=%7B%22session_id%22%3A%22dca367dcda209b5197f5f83aee862c7bfb09dc68%22%7D&experiment=test_exp`,
-					{
-						method: "DELETE",
-						headers: {
-							"Content-Type": "application/json",
-							"X-API-Key": apiKey,
-							"X-Agent": "javascript-client",
-							"X-Environment": "test",
-							"X-Application": "test_app",
-							"X-Application-Version": 1000000,
-						},
-					}
-				);
 
 				expect(response).toEqual(defaultMockResponse);
 
