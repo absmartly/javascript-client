@@ -39,7 +39,6 @@ describe("Client", () => {
 	};
 
 	const defaultMockResponse = {
-		guid: "215a4562d1d82ed5658cfa674e8502a317305a25",
 		units,
 	};
 
@@ -151,7 +150,6 @@ describe("Client", () => {
 
 		client
 			.refreshContext({
-				guid: defaultMockResponse.guid,
 				units,
 			})
 			.then((response) => {
@@ -167,7 +165,6 @@ describe("Client", () => {
 						"X-Application-Version": 1000000,
 					},
 					body: JSON.stringify({
-						guid: defaultMockResponse.guid,
 						units,
 					}),
 				});
@@ -466,7 +463,6 @@ describe("Client", () => {
 
 		client
 			.publish({
-				guid: defaultMockResponse.guid,
 				units,
 				publishedAt,
 				goals,
@@ -486,7 +482,6 @@ describe("Client", () => {
 						"X-Application-Version": 1000000,
 					},
 					body: JSON.stringify({
-						guid: defaultMockResponse.guid,
 						units,
 						publishedAt,
 						goals,
@@ -508,7 +503,6 @@ describe("Client", () => {
 
 		client
 			.publish({
-				guid: defaultMockResponse.guid,
 				units,
 				publishedAt,
 				goals: [],
@@ -527,7 +521,6 @@ describe("Client", () => {
 						"X-Application-Version": 1000000,
 					},
 					body: JSON.stringify({
-						guid: defaultMockResponse.guid,
 						units,
 						publishedAt,
 					}),
@@ -547,7 +540,6 @@ describe("Client", () => {
 
 		client
 			.publish({
-				guid: defaultMockResponse.guid,
 				units,
 				goals: [],
 				exposures: [],
@@ -565,7 +557,6 @@ describe("Client", () => {
 						"X-Application-Version": 1000000,
 					},
 					body: JSON.stringify({
-						guid: defaultMockResponse.guid,
 						units,
 						publishedAt: publishedAt + 100,
 					}),
